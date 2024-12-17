@@ -1,0 +1,11 @@
+{
+    "name": "FLUTE App",
+    "short_name": "FLUTEApp",
+    "ïd": "fluteapp",
+    "lang": "en-US",
+    "theme_color": "#2196f3",
+    "background_color": "#f37e21",
+    "display": "standalone",
+    "scope": "/",
+    "start_url": "/index.html"
+  }
