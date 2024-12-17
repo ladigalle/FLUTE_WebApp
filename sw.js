@@ -10,6 +10,9 @@ let assetsFileCache = [
     "images/icons/icon-512x512.webp",
     "styles/main.css",
     "styles/bs-css-min_5.3.3.css",
+    "styles/bs-icons-min_5.3.3.css",
+    "styles/fonts/bootstrap-icons.woff",
+    "styles/fonts/bootstrap-icons.woff2",
     "scripts/main.js",
     "scripts/bs-js-bundle-min_5.3.3.js",
 ]

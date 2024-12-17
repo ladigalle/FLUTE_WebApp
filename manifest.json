@@ -1,7 +1,7 @@
 {
     "name": "FLUTE App",
     "short_name": "FLUTEApp",
-    "ïd": "fluteapp",
+    "ïd": "/index.html",
     "lang": "en-US",
     "theme_color": "#fab500",
     "background_color": "#353535",
