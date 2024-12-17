@@ -5,6 +5,7 @@ let assetsFileCache = [
     "index.html",
     "favicon.ico",
     "images/icons/icon-96x96.webp",
+    "images/icons/icon-144x144.webp",
     "images/icons/icon-192x192.webp",
     "images/icons/icon-512x512.webp",
     "styles/main.css",
