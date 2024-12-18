@@ -1,8 +1,8 @@
 // Remove install button and banner
-const checkInstall = () => {
+const appInstall = () => {
     installButton.hidden = true;
     installBanner.hidden = true;
-    preDebug.append("App installed");
+    preDebug.append("App installed\r\n");
 }
 
 // Register serviceWorker on page loading
@@ -14,8 +14,8 @@ window.onload = () => {
     }
 
     if (window.matchMedia('(display-mode: standalone)').matches) {  
-        checkInstall();
-    }  
+        appInstall();
+    }
 }
 
 // Catch PWA install prompt and manage it 
@@ -49,5 +49,16 @@ window.addEventListener("beforeinstallprompt", e => {
 
 // Check if app is installed 
 window.addEventListener("appinstalled", e => {
-    checkInstall();
+    appInstall();
 })
+
+// Enable advanced live measurement mode
+let nbClickSLM = 0;
+liveMeasurementMode.addEventListener("click", e => {
+    preDebug.append(`switch for live mode state change ${e.currentTarget.checked}\r\n`);
+
+    nbClickSLM++;
+    if (nbClickSLM > 42) {
+        logoNavBar.style.transform = 'rotate(' + 180 + 'deg)';
+    }
+});

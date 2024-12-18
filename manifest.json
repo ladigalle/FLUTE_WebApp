@@ -1,4 +1,5 @@
 {
+    "version": "0.1.0",
     "name": "FLUTE Tools",
     "short_name": "FLUTE Tools",
     "description" : "WebApp for FLUTE product (BLE DMM)",
@@ -49,5 +50,11 @@
       "form_factor": "narrow",
       "label": "App UI"
     }
-]
+  ],
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "https://flute.digalllex.fr/manifest.json"
+    }
+  ]
 }
