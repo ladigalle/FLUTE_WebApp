@@ -1,6 +1,6 @@
 {
-    "name": "FLUTE App",
-    "short_name": "FLUTE App",
+    "name": "FLUTE Tools",
+    "short_name": "FLUTE Tools",
     "description" : "WebApp for FLUTE product (BLE DMM)",
     "lang": "en-US",
     "theme_color": "#fab500",

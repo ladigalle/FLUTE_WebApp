@@ -2,7 +2,7 @@
 <html lang="en-US">
     <head>
         <meta charset="utf-8">
-        <title>FLUTE App</title>
+        <title>FLUTE Tools App</title>
         
         <link rel="manifest" href="./manifest.json">
         <meta name="mobile-web-app-capable" content="yes">
@@ -10,7 +10,7 @@
         <meta name="msapplication-starturl" content="/">
         <link rel="canonical" href="https://flute.digalllex.fr"/>
         
-        <meta name="application-name" content="FLUTEApp">
+        <meta name="application-name" content="FLUTE Tools">
         <meta name="description" content="WebApp for FLUTE product (BLE DMM)">
         <meta name="keywords" content="FLUTE, 01B, TWM, BLE, DMM, Multimeter">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,29 +28,35 @@
                 <section class="navbar-brand">
                     <img src="./images/icons/icon-144x144.webp" alt="Logo" width="64" class="">
                 </section> 
-                <section>
-                    <span class="navbar-brand mb-0 h1">Navbar</span>
+                <section class="navbar-brand mb-0 h1">
+                    <button type="button" id="installButton" class="btn btn-success">Install FLUTE app</button>
                 </section>
             </div>
         </nav>
         <main class="container-fluid">
+            <div id="installBanner">
+                <hr />
+                <div class="alert alert-info">
+                    Install the FLUTE app to enjoy offline use!
+                </div>
+            </div>
+            <hr />
             <div class="row row-gap-3">
                 <div class="col-lg-3">
                     <div class="card h-100">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h3>My device</h3>
-                            <button id="promptButton" class="btn btn-secondary">Connect</button>
+                            <button type="button" class="btn btn-secondary">Connect</button>
                         </div>
                         <div class="card-body">
                             <div>
                                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates doloremque debitis hic error voluptate neque vero minus nobis id laudantium odio architecto quis aut illum mollitia fugit est, enim cum!
                             </div>
-                            <pre id="pre">Waiting for beforeinstallprompt...<br/></pre>
                         </div>
                         <div class="card-footer text-muted">Connect to your FLUTE to get infos and live measurement!</div>
-                        <div class="card-footer d-flex justify-content-between align-items-center d-none">
-                            <button class="btn btn-info">Modify</button>
-                            <button class="btn btn-danger">Destroy</button>
+                        <div class="card-footer d-flex justify-content-between align-items-center d-none" hidden>
+                            <button type="button" class="btn btn-info">Modify</button>
+                            <button type="button" class="btn btn-danger">Destroy</button>
                         </div>
                     </div>
                 </div>
@@ -67,13 +73,23 @@
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h3>Sessions</h3>
                         </div>
-                        <div class="card-body">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sint dicta beatae consectetur amet accusamus quia consequuntur quas, ipsam, perferendis soluta sed. Eveniet ad dolore rerum earum. Amet beatae nihil illo.</div>
+                        <div class="card-body">Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi unde itaque hic dolor ipsam quisquam dolores illo dolorem omnis! Neque architecto maxime vel fugiat at expedita, doloribus porro ducimus molestiae!</div>
                     </div>
                 </div>
             </div>
-            
-
-
+            <hr />
+            <div class="row row-gap-3">
+                <div class="col-lg">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Debug console</h3>
+                        </div>
+                        <div class="card-body">
+                            <pre id="preDebug"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
         
         <script src="./scripts/bs-js-bundle-min_5.3.3.js"></script>
