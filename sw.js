@@ -10,7 +10,7 @@ let assetsFileCache = [
     "images/icons/icon-512x512.webp",
     "styles/main.css",
     "styles/bs-css-min_5.3.3.css",
-    "styles/bs-icons-min_5.3.3.css",
+    "styles/bs-icons-min_1.11.3.css",
     "styles/fonts/bootstrap-icons.woff",
     "styles/fonts/bootstrap-icons.woff2",
     "scripts/main.js",
@@ -19,7 +19,7 @@ let assetsFileCache = [
 
 self.addEventListener("install", function(e) {
     e.waitUntil(
-        caches.open(cacheName).then(function(cache) {
+        caches.open(cacheName).then(async function(cache) {
             return cache.addAll(assetsFileCache)
         })
     )
@@ -27,7 +27,7 @@ self.addEventListener("install", function(e) {
 
 self.addEventListener("fetch", function(e) {
     e.respondWith(
-        caches.match(e.request).then(function(reponse) {
+        caches.match(e.request).then(async function(reponse) {
             return reponse || fetch(e.request)
         })
     )

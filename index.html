@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-US">
     <head>
+        <meta charset="utf-8">
         <title>FLUTE App</title>
         
         <link rel="manifest" href="./manifest.json">
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="msapplication-starturl" content="/">
+        <link rel="canonical" href="https://flute.digalllex.fr"/>
         
         <meta name="application-name" content="FLUTEApp">
         <meta name="description" content="WebApp for FLUTE product (BLE DMM)">
@@ -31,18 +33,19 @@
                 </section>
             </div>
         </nav>
-        <div class="container-fluid">
+        <main class="container-fluid">
             <div class="row row-gap-3">
                 <div class="col-lg-3">
                     <div class="card h-100">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h3>My device</h3>
-                            <button class="btn btn-secondary">Connect</button>
+                            <button id="promptButton" class="btn btn-secondary">Connect</button>
                         </div>
                         <div class="card-body">
                             <div>
                                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates doloremque debitis hic error voluptate neque vero minus nobis id laudantium odio architecto quis aut illum mollitia fugit est, enim cum!
                             </div>
+                            <pre id="pre">Waiting for beforeinstallprompt...<br/></pre>
                         </div>
                         <div class="card-footer text-muted">Connect to your FLUTE to get infos and live measurement!</div>
                         <div class="card-footer d-flex justify-content-between align-items-center d-none">
@@ -71,7 +74,7 @@
             
 
 
-        </div>
+        </main>
         
         <script src="./scripts/bs-js-bundle-min_5.3.3.js"></script>
         <script src="./scripts/main.js"></script>
