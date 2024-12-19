@@ -37,16 +37,30 @@
   ],
   "screenshots": [
     {
-     "src": "images/screenshots/ss-wide.jpeg",
+     "src": "images/screenshots/cover-logo-wide.png",
       "sizes": "1280x800",
-      "type": "image/jpeg",
+      "type": "image/png",
       "form_factor": "wide",
+      "label": "App Cover"
+    },
+    {
+      "src": "images/screenshots/ss-wide.png",
+       "sizes": "1280x800",
+       "type": "image/png",
+       "form_factor": "wide",
+       "label": "App UI"
+     },
+    {
+     "src": "images/screenshots/cover-logo-narrow.png",
+      "sizes": "412x915",
+      "type": "image/png",
+      "form_factor": "narrow",
       "label": "App UI"
     },
     {
-     "src": "images/screenshots/ss-narrow.jpeg",
+     "src": "images/screenshots/ss-narrow.png",
       "sizes": "412x915",
-      "type": "image/jpeg",
+      "type": "image/png",
       "form_factor": "narrow",
       "label": "App UI"
     }
