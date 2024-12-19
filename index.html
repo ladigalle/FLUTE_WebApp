@@ -18,7 +18,7 @@
         <link rel="icon" type="image/x-icon" href="./favicon.ico">
         <link rel="apple-touch-icon" href="./favicon.ico">
 
-        <link rel="stylesheet" href="./styles/bs-css-min_5.3.3.css">
+        <link rel="stylesheet" href="./styles/bs-css-min_f_5.3.3.css">
         <link rel="stylesheet" href="./styles/bs-icons-min_1.11.3.css">        
         <link rel="stylesheet" href="./styles/main.css">
     </head>
@@ -29,24 +29,24 @@
                     <img src="./images/logo-flute-tools.png" id="logoNavBar" alt="Logo" height="64" width="202.7">
                 </section> 
                 <section class="navbar-brand mb-0 h1">
-                    <button type="button" id="installButton" class="btn btn-success">Install FLUTE app</button>
+                    <button type="button" id="installButton" class="btn btn-success">Install app</button>
                 </section>
             </div>
         </nav>
-        <main class="container-fluid">
+        <main class="container-fluid bg-body-secondary">
             <div id="installBanner">
-                <hr />
-                <div class="alert alert-info">
+                <br>
+                <div class="alert alert-info alert-dismissible fade show">
                     Install the FLUTE app to enjoy offline use!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             </div>
-            <hr />
             <div class="row row-gap-3">
                 <div class="col-lg-3">
                     <div class="card h-100">
                         <div class="card-header d-flex justify-content-between align-items-center user-select-none">
                             <h3>My device</h3>
-                            <button type="button" class="btn btn-secondary">Connect</button>
+                            <button type="button" class="btn btn-primary">Connect</button>
                         </div>
                         <div class="card-body">
                             <div>
@@ -57,7 +57,7 @@
                             Connect to your FLUTE to get infos and live measurement!
                         </div>
                         <div class="card-footer d-flex justify-content-between align-items-center d-none" hidden>
-                            <button type="button" class="btn btn-info">Modify</button>
+                            <button type="button" class="btn btn-warning">Modify</button>
                             <button type="button" class="btn btn-danger">Destroy</button>
                         </div>
                     </div>
@@ -67,16 +67,20 @@
                         <div class="card-header d-flex justify-content-between align-items-center user-select-none">
                             <h3>Live Measurement</h3>
                         </div>
-                        <div class="card-body" style="height: 66vh;">
-                            <div class="d-flex d-lg-flex justify-content-center user-select-none">
-                                <h4 class="form-text labelLiveMeasurementMode">Simple</h4>
-                                <div  style="margin-right: 0;" class="form-check form-switch form-check-inline">
-                                    <input type="checkbox" role="switch" id="liveMeasurementMode" class="form-check-input bg-warning h-75">
+                        <div class="card-body d-flex flex-column align-items-center" style="height: 66vh;">
+                            <div class="row">
+                                <div class="col-12 d-flex justify-content-center user-select-none">
+                                    <h4 class="form-text labelLiveMeasurementMode">Simple</h4>
+                                    <div  style="margin-right: 0;" class="form-check form-switch form-check-inline">
+                                        <input type="checkbox" role="switch" id="liveMeasurementMode" class="form-check-input h-75">
+                                    </div>
+                                    <h4 class="form-text labelLiveMeasurementMode">Advanced</h4>
                                 </div>
-                                <h4 class="form-text labelLiveMeasurementMode">Advanced</h4>
                             </div>
                             <div class="row flex-grow-1">
-                                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sint dicta beatae consectetur amet accusamus quia consequuntur quas, ipsam, perferendis soluta sed. Eveniet ad dolore rerum earum. Amet beatae nihil illo.
+                                <div class="col-12 d-flex justify-content-center d-lg-flex">
+                                    Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sint dicta beatae consectetur amet accusamus quia consequuntur quas, ipsam, perferendis soluta sed. Eveniet ad dolore rerum earum. Amet beatae nihil illo.
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -90,7 +94,7 @@
                     </div>
                 </div>
             </div>
-            <hr />
+            <br>
             <div class="row row-gap-3">
                 <div class="col-lg">
                     <div class="card">
@@ -103,6 +107,7 @@
                     </div>
                 </div>
             </div>
+            <br>
         </main>
         
         <script src="./scripts/bs-js-bundle-min_5.3.3.js"></script>
