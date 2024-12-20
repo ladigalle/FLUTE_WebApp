@@ -1,3 +1,7 @@
+/**
+ * ----- BEGIN PWA Installation Process -----
+ */
+
 // Remove install button and banner
 const appInstall = () => {
     installButton.hidden = true;
@@ -52,6 +56,64 @@ window.addEventListener("appinstalled", e => {
     appInstall();
 })
 
+/**
+ * ----- END PWA Installation Process -----
+ */
+
+/**
+ * ----- BEGIN BLE Connection Process -----
+ */
+var fluteDevice;
+
+const fluteServices = [
+    "4de7e0fc-01b0-4693-b3fb-e7c14a957bff",
+    "4eb81bd4-b229-4ca6-8a6f-583b78057dfa",
+    "46561c3b-d66a-4038-bf64-19b9747370c8",
+];
+
+bntBLEConnect.addEventListener("click", e => {
+    preDebug.append(`button for BLE connection clicked\r\n`);
+    preDebug.append(`> Requesting Bluetooth Device...\r\n`);
+
+    fluteDevice = navigator.bluetooth.requestDevice({
+        filters: [
+            {namePrefix: "FLUTE_"}
+        ],
+        optionalServices: fluteServices
+    })
+    .then(device => {
+        fluteDevice = device;
+        fluteDevice.addEventListener("gattserverdisconnected", onDisconnect);
+        return device.gatt.connect();
+    });
+});
+
+
+bntBLEDisconnect.addEventListener("click", e => {
+    preDebug.append('> Disconnecting from Bluetooth Device...');
+    myDevice.gatt.disconnect();
+    // document.getElementById('connectButton').disabled = false;
+    // props.setIsDisconnected(true);
+    // props.setAllServices([]);
+    // document.location.href = "/Web_Bluetooth_App_WBA";
+});
+
+function onDisconnect() {
+    preDebug.append('> Bluetooth Device disconnected');
+    // document.getElementById('connectButton').disabled = false;
+    // props.setIsDisconnected(true);
+    // props.setAllServices([]);
+    // document.location.href = "/Web_Bluetooth_App_WBA/";
+}
+
+
+/**
+ * ----- END BLE Connection Process -----
+ */
+
+/**
+ * ----- BEGIN UI Interaction Process -----
+ */
 // Enable advanced live measurement mode
 let nbClickSLM = 0;
 liveMeasurementMode.addEventListener("click", e => {
@@ -109,3 +171,6 @@ if (measureLineChart) {
       });
 }
 
+/**
+ * ----- END UI Interaction Process -----
+ */

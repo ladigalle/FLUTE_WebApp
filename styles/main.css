@@ -1,24 +1,28 @@
 body {
-    min-width: 370px;
+    min-width: 390px;
+}
+
+ button#installButton, button#bntBLEConnect, button#bntBLEDisconnect {
+    width: 8em;
 }
 
 .labelLiveMeasurementMode {
     margin: 6px .5em 8px 0;
 }
 
-#liveMeasurementAdvanced {
+div#liveMeasurementAdvanced {
     height:40vh; 
-    width: 366px;
+    width: 350px;
 }
 
-@media (min-width: 370px) {
-    #liveMeasurementAdvanced {
+@media (min-width: 390px) {
+    div#liveMeasurementAdvanced {
         width:90vw;
     }
 }
 
 @media (min-width: 992px) {
-    #liveMeasurementAdvanced {
+    div#liveMeasurementAdvanced {
         width:45vw;
     }
 }
