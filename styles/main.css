@@ -5,3 +5,14 @@ body {
 .labelLiveMeasurementMode {
     margin: 6px .5em 8px 0;
 }
+
+/* #liveMeasurementAdvanced {
+    height:40vh; 
+    width:45vw;
+}
+
+@media (min-width: 992px) {
+    #liveMeasurementAdvanced {
+        width: 90vw;
+    }
+} */
