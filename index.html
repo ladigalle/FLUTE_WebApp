@@ -22,7 +22,7 @@
         <link rel="stylesheet" href="./styles/bs-icons-min_1.11.3.css">        
         <link rel="stylesheet" href="./styles/main.css">
     </head>
-    <body>
+    <body class="bg-body-secondary">
         <nav class="navbar bg-body-tertiary">
             <div class="container-fluid">
                 <section class="navbar-brand user-select-none">
@@ -33,7 +33,7 @@
                 </section>
             </div>
         </nav>
-        <main class="container-fluid bg-body-secondary">
+        <main class="container-fluid">
             <div id="installBanner">
                 <br>
                 <div class="alert alert-info alert-dismissible fade show">
@@ -41,6 +41,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             </div>
+            <br>
             <div class="row row-gap-3">
                 <div class="col-lg-3">
                     <div class="card h-100">
@@ -67,7 +68,7 @@
                         <div class="card-header d-flex justify-content-between align-items-center user-select-none">
                             <h3>Live Measurement</h3>
                         </div>
-                        <div class="card-body d-flex flex-column align-items-center" style="height: 66vh;">
+                        <div class="card-body d-flex flex-column align-items-center" style="min-height: 25em;">
                             <div class="row">
                                 <div class="col-12 d-flex justify-content-center user-select-none">
                                     <h4 class="form-text labelLiveMeasurementMode">Simple</h4>
@@ -78,8 +79,15 @@
                                 </div>
                             </div>
                             <div class="row flex-grow-1">
-                                <div class="col-12 d-flex justify-content-center d-lg-flex">
-                                    Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sint dicta beatae consectetur amet accusamus quia consequuntur quas, ipsam, perferendis soluta sed. Eveniet ad dolore rerum earum. Amet beatae nihil illo.
+                                <div id="liveMeasurementSimple" class="col-12 d-flex d-lg-flex justify-content-center align-items-center">
+                                        <p style="text-align: center;">
+                                            <span id="measureValue" style="font-size: 10em;">0235</span><span id="measureUnit" style="font-size: 6em;"> mV</span>
+                                            <br><br>
+                                            <span id="measureRange" style="font-size: 1em;">Range: 0-20V</span>
+                                        </p>
+                                </div>
+                                <div id="liveMeasurementAdvanced" class="col-12 d-flex justify-content-center align-items-center d-none" hidden>
+                                    <canvas id="measureLineChart" style="min-width: 370px;"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -111,6 +119,7 @@
         </main>
         
         <script src="./scripts/bs-js-bundle-min_5.3.3.js"></script>
+        <script src="./scripts/chartjs-min_4.4.7.js"></script>
         <script src="./scripts/main.js"></script>
     </body>        
 </html>
