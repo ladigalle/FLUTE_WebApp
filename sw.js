@@ -15,6 +15,7 @@ let assetsFileCache = [
     "styles/fonts/bootstrap-icons.woff2",
     "scripts/main.js",
     "scripts/bs-js-bundle-min_5.3.3.js",
+    "scripts/chartjs-min_4.4.7.js",
 ]
 
 self.addEventListener("install", function(e) {

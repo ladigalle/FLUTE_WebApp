@@ -56,9 +56,54 @@ window.addEventListener("appinstalled", e => {
 let nbClickSLM = 0;
 liveMeasurementMode.addEventListener("click", e => {
     preDebug.append(`switch for live mode state change ${e.currentTarget.checked}\r\n`);
+    var simpleDiv = document.getElementById("liveMeasurementSimple");
+    var advancedDiv = document.getElementById("liveMeasurementAdvanced");
+
+    if (e.currentTarget.checked == true) {
+        simpleDiv.classList.add("d-none");
+        simpleDiv.classList.remove("d-lg-flex");
+        simpleDiv.hidden = true;
+        advancedDiv.classList.remove("d-none");
+        advancedDiv.classList.add("d-lg-flex");
+        advancedDiv.hidden = false;
+    } else {
+        advancedDiv.classList.add("d-none");
+        advancedDiv.classList.remove("d-lg-flex");
+        advancedDiv.hidden = true;
+        simpleDiv.classList.remove("d-none");
+        simpleDiv.classList.add("d-lg-flex");
+        simpleDiv.hidden = false;
+    }
 
     nbClickSLM++;
     if (nbClickSLM > 42) {
         logoNavBar.style.transform = 'rotate(' + 180 + 'deg)';
     }
 });
+
+// chart colors
+var colors = ['#007bff','#28a745','#333333','#c3e6cb','#dc3545','#6c757d'];
+const ctx = document.getElementById('measureLineChart')
+
+/* large line chart */
+if (measureLineChart) {
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+          datasets: [{
+            label: '# of Votes',
+            data: [12, 19, 3, 5, 2, 3],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+}
+
