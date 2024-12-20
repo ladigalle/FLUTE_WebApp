@@ -6,13 +6,19 @@ body {
     margin: 6px .5em 8px 0;
 }
 
-/* #liveMeasurementAdvanced {
+#liveMeasurementAdvanced {
     height:40vh; 
-    width:45vw;
+    width: 366px;
+}
+
+@media (min-width: 370px) {
+    #liveMeasurementAdvanced {
+        width:90vw;
+    }
 }
 
 @media (min-width: 992px) {
     #liveMeasurementAdvanced {
-        width: 90vw;
+        width:45vw;
     }
-} */
+}
