@@ -8,6 +8,7 @@ let assetsFileCache = [
     "images/icons/icon-144x144.webp",
     "images/icons/icon-192x192.webp",
     "images/icons/icon-512x512.webp",
+    "images/logo-flute-tools.png",
     "styles/main.css",
     "styles/bs-css-min_f_5.3.3.css",
     "styles/bs-icons-min_1.11.3.css",
