@@ -143,32 +143,92 @@ liveMeasurementMode.addEventListener("click", e => {
     }
 });
 
+let isLiveMeasurePaused = false;
+let debugRefresh = setInterval(updateChart, 250);
+bntPauseResume.addEventListener("click", e => {
+    var btnPR = document.getElementById("bntPauseResume");
+
+    if (isLiveMeasurePaused == true) {
+        preDebug.append(`pause button for live \r\n`);
+        isLiveMeasurePaused = false;
+        bntPauseResume.innerHTML = '<i class="bi bi-play-fill"></i>';
+        btnPR.classList.remove("btn-outline-warning");
+        btnPR.classList.add("btn-success");
+        debugRefresh = setInterval(updateChart, 250);
+    } else {
+        preDebug.append(`play button for live \r\n`);
+        isLiveMeasurePaused = true;
+        bntPauseResume.innerHTML = '<i class="bi bi-pause-fill"></i>';
+        btnPR.classList.remove("btn-success");
+        btnPR.classList.add("btn-outline-warning");
+        clearInterval(debugRefresh);
+    }
+    
+});
+
 // chart colors
-var colors = ['#007bff','#28a745','#333333','#c3e6cb','#dc3545','#6c757d'];
 const ctx = document.getElementById('measureLineChart')
+let mlc;
+var dataLabel = []; //'Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'
+var dataValue = []; //12, 19, 3, 5, 2, 3
 
 /* large line chart */
-if (measureLineChart) {
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-            datasets: [{
-                label: '# of Votes',
-                data: [12, 19, 3, 5, 2, 3],
-                borderWidth: 1
-          }]
+Chart.defaults.font.family = "'Roboto Slab', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', 'Liberation Sans', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'";
+Chart.defaults.font.size = 16;
+
+mlc = new Chart(ctx, {
+type: 'line',
+data: {
+    labels: dataLabel,
+    datasets: [{
+        label: 'Measures',
+        data: dataValue,
+        borderColor: '#FAB500',
+        backgroundColor: '#FAB500',
+        borderWidth: 5,
+    }]
+},
+options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+        legend: {
+            display: false,
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-            y: {
-              beginAtZero: true
-            }
-          }
+    },
+    scales: {
+        x: {
+            display: false,
+        },
+        y: {
+            beginAtZero: false,
+            title: {
+                display: true,
+                text: 'milliVolt (mV)',
+                align: 'center', 
+            },
         }
-      });
+    }
+}
+});
+
+let iLabel = 0;
+function updateChart () {
+    if (dataValue.length > 30) {
+        dataValue.shift();
+    } else {
+        dataLabel.push(`${iLabel}`);
+        iLabel++;
+    }
+    // mlc.data.labels.push(`${iLabel}`);
+
+    let val = Math.random()*(3000 - 0) + 0;
+    measureValue.innerHTML = ('0000' + val.toFixed(0)).slice(-4);
+    dataValue.push(val);
+    // mlc.data.datasets.forEach((dataset) => {
+    //     dataset.data.push(val);
+    // });
+    mlc.update();
 }
 
 /**
