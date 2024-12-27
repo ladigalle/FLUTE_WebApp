@@ -64,12 +64,16 @@ window.addEventListener("appinstalled", e => {
  * ----- BEGIN BLE Connection Process -----
  */
 var fluteDevice;
-
+var isDeviceConnected = false;
 const fluteServices = [
     "4de7e0fc-01b0-4693-b3fb-e7c14a957bff",
     "4eb81bd4-b229-4ca6-8a6f-583b78057dfa",
     "46561c3b-d66a-4038-bf64-19b9747370c8",
+    '00001809-0000-1000-8000-00805f9b34fb',
 ];
+
+let connectBtn = document.getElementById("bntBLEConnect");
+let disconnectBtn = document.getElementById("bntBLEDisconnect");
 
 bntBLEConnect.addEventListener("click", e => {
     preDebug.append(`button for BLE connection clicked\r\n`);
@@ -77,7 +81,7 @@ bntBLEConnect.addEventListener("click", e => {
 
     fluteDevice = navigator.bluetooth.requestDevice({
         filters: [
-            {namePrefix: "FLUTE_"}
+            {namePrefix: "HT"}
         ],
         optionalServices: fluteServices
     })
@@ -85,27 +89,51 @@ bntBLEConnect.addEventListener("click", e => {
         fluteDevice = device;
         fluteDevice.addEventListener("gattserverdisconnected", onDisconnect);
         return device.gatt.connect();
+    })
+    .then(server => {
+        return server.getPrimaryServices();
+    })
+    .then(services => {
+        preDebug.append(`> Getting Characteristics...\r\n`);
+        let queue = Promise.resolve();
+        services.forEach(service => {
+            preDebug.append(service);
+            queue = queue.then(_ => service.getCharacteristics().then(characteristics => {
+                preDebug.append(`${characteristics}\r\n`);
+            }));
+        });
+        
+        connectBtn.classList.add("d-none");
+        connectBtn.hidden = true;
+        disconnectBtn.classList.remove("d-none");
+        disconnectBtn.hidden = false;
+
+        isDeviceConnected = true;
+        return queue;
+    })
+    .catch(error => {
+        preDebug.append(`${error}\r\n`);
     });
 });
 
-
 bntBLEDisconnect.addEventListener("click", e => {
-    preDebug.append('> Disconnecting from Bluetooth Device...');
-    myDevice.gatt.disconnect();
-    // document.getElementById('connectButton').disabled = false;
-    // props.setIsDisconnected(true);
-    // props.setAllServices([]);
-    // document.location.href = "/Web_Bluetooth_App_WBA";
+    preDebug.append(`> Disconnecting from Bluetooth Device...\r\n`);
+    
+    onDisconnect();
 });
 
 function onDisconnect() {
-    preDebug.append('> Bluetooth Device disconnected');
-    // document.getElementById('connectButton').disabled = false;
-    // props.setIsDisconnected(true);
-    // props.setAllServices([]);
-    // document.location.href = "/Web_Bluetooth_App_WBA/";
-}
+    fluteDevice.gatt.disconnect();
+    
+    isDeviceConnected = false;
 
+    preDebug.append(`> Bluetooth Device disconnected\r\n`);
+    
+    disconnectBtn.classList.add("d-none");
+    disconnectBtn.hidden = true;
+    connectBtn.classList.remove("d-none");
+    connectBtn.hidden = false;
+}
 
 /**
  * ----- END BLE Connection Process -----
@@ -115,11 +143,11 @@ function onDisconnect() {
  * ----- BEGIN UI Interaction Process -----
  */
 // Enable advanced live measurement mode
-let nbClickSLM = 0;
+var nbClickSLM = 0;
 liveMeasurementMode.addEventListener("click", e => {
     preDebug.append(`switch for live mode state change ${e.currentTarget.checked}\r\n`);
-    var simpleDiv = document.getElementById("liveMeasurementSimple");
-    var advancedDiv = document.getElementById("liveMeasurementAdvanced");
+    let simpleDiv = document.getElementById("liveMeasurementSimple");
+    let advancedDiv = document.getElementById("liveMeasurementAdvanced");
 
     if (e.currentTarget.checked == true) {
         simpleDiv.classList.add("d-none");
@@ -143,10 +171,10 @@ liveMeasurementMode.addEventListener("click", e => {
     }
 });
 
-let isLiveMeasurePaused = false;
-let debugRefresh = setInterval(updateChart, 250);
+var isLiveMeasurePaused = false;
+var debugRefresh = setInterval(updateChart, 250);
 bntPauseResume.addEventListener("click", e => {
-    var btnPR = document.getElementById("bntPauseResume");
+    let btnPR = document.getElementById("bntPauseResume");
 
     if (isLiveMeasurePaused == true) {
         preDebug.append(`pause button for live \r\n`);
@@ -167,16 +195,15 @@ bntPauseResume.addEventListener("click", e => {
 });
 
 // chart colors
-const ctx = document.getElementById('measureLineChart')
-let mlc;
-var dataLabel = []; //'Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'
-var dataValue = []; //12, 19, 3, 5, 2, 3
+const ctx = document.getElementById('measureLineChart');
+var dataLabel = [];
+var dataValue = [];
 
 /* large line chart */
 Chart.defaults.font.family = "'Roboto Slab', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', 'Liberation Sans', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'";
 Chart.defaults.font.size = 16;
 
-mlc = new Chart(ctx, {
+let mlc = new Chart(ctx, {
 type: 'line',
 data: {
     labels: dataLabel,
@@ -220,14 +247,11 @@ function updateChart () {
         dataLabel.push(`${iLabel}`);
         iLabel++;
     }
-    // mlc.data.labels.push(`${iLabel}`);
 
     let val = Math.random()*(3000 - 0) + 0;
     measureValue.innerHTML = ('0000' + val.toFixed(0)).slice(-4);
     dataValue.push(val);
-    // mlc.data.datasets.forEach((dataset) => {
-    //     dataset.data.push(val);
-    // });
+
     mlc.update();
 }
 
