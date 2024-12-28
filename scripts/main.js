@@ -3,7 +3,7 @@
  */
 
 // Remove install button and banner
-const appInstall = () => {
+const appInstalled = () => {
     installButton.hidden = true;
     installBanner.hidden = true;
     preDebug.append("App installed\r\n");
@@ -18,7 +18,7 @@ window.onload = () => {
     }
 
     if (window.matchMedia('(display-mode: standalone)').matches) {  
-        appInstall();
+        appInstalled();
     }
 }
 
@@ -53,7 +53,7 @@ window.addEventListener("beforeinstallprompt", e => {
 
 // Check if app is installed 
 window.addEventListener("appinstalled", e => {
-    appInstall();
+    appInstalled();
 })
 
 /**
@@ -66,10 +66,17 @@ window.addEventListener("appinstalled", e => {
 var fluteDevice;
 var isDeviceConnected = false;
 const fluteServices = [
-    "4de7e0fc-01b0-4693-b3fb-e7c14a957bff",
-    "4eb81bd4-b229-4ca6-8a6f-583b78057dfa",
+    "4de7e0fc-01b0-4693-b3fb-e7c14a957bff", //  BLE ADV + FLUTE Measurement Service
+    "4eb81bd4-b229-4ca6-8a6f-583b78057dfa", //  Firmware Update OTA Service
     "46561c3b-d66a-4038-bf64-19b9747370c8",
-    '00001809-0000-1000-8000-00805f9b34fb',
+    "eb7a6896-d9de-4a24-9945-93dff1793e43", //  FLUTE Device Mode Characteristic
+    "7c82e35a-d585-4424-94db-72140af95b4e", //  FLUTE Device Mode Range Characteristic
+    "ed34a4e6-ae68-4099-831f-4c3d432ab806", //  FLUTE Measured Value Characteristic
+    "c4400b8e-04bc-4076-9348-face6420560f", //  FLUTE Measured Value Unit Characteristic
+    "f03339c2-d2ac-4c2d-bd47-eabff617e20b", //  Firmware Update OTA Base Address Characteristic
+    "0899d7c8-9dec-4d99-9cea-da73d606db3b", //  Firmware Update OTA Confirmation Characteristic
+    "8966d085-57b8-4fa0-8b0b-0439b668c3c8", //  Firmware Update OTA Raw Data Characteristic
+    "00001809-0000-1000-8000-00805f9b34fb",
 ];
 
 let connectBtn = document.getElementById("bntBLEConnect");
@@ -171,24 +178,24 @@ liveMeasurementMode.addEventListener("click", e => {
     }
 });
 
-var isLiveMeasurePaused = false;
-var debugRefresh = setInterval(updateChart, 250);
+var isLiveMeasurePaused = true;
+var debugRefresh;
 bntPauseResume.addEventListener("click", e => {
     let btnPR = document.getElementById("bntPauseResume");
 
     if (isLiveMeasurePaused == true) {
-        preDebug.append(`pause button for live \r\n`);
+        preDebug.append(`play button for live measurment pressed\r\n`);
         isLiveMeasurePaused = false;
-        bntPauseResume.innerHTML = '<i class="bi bi-play-fill"></i>';
-        btnPR.classList.remove("btn-outline-warning");
-        btnPR.classList.add("btn-success");
+        btnPR.classList.remove("btn-success");
+        btnPR.classList.add("btn-warning");
+        bntPauseResume.innerHTML = '<i class="bi bi-pause-fill"></i>';
         debugRefresh = setInterval(updateChart, 250);
     } else {
-        preDebug.append(`play button for live \r\n`);
+        preDebug.append(`pause button for live measurment pressed\r\n`);
         isLiveMeasurePaused = true;
-        bntPauseResume.innerHTML = '<i class="bi bi-pause-fill"></i>';
-        btnPR.classList.remove("btn-success");
-        btnPR.classList.add("btn-outline-warning");
+        btnPR.classList.remove("btn-warning");
+        btnPR.classList.add("btn-success");
+        bntPauseResume.innerHTML = '<i class="bi bi-play-fill"></i>';
         clearInterval(debugRefresh);
     }
     
