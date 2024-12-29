@@ -51,8 +51,27 @@
                             <button type="button" id="bntBLEDisconnect" class="btn btn-danger d-none" hidden>Disconnect</button>
                         </div>
                         <div class="card-body">
-                            <div>
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates doloremque debitis hic error voluptate neque vero minus nobis id laudantium odio architecto quis aut illum mollitia fugit est, enim cum!
+                            <div id="divDeviceDetails">
+                                <div class="mb-sm-0 row">
+                                    <label for="manufacturerName" class="form-label col-sm-5" style="margin: 6px 0px;">Manufacturer</label>
+                                    <div class=" col-sm-6"><input type="text" readonly class="form-control-plaintext" id="manufacturerName" placeholder=""></div>
+                                </div>
+                                <div class="mb-sm-0 row">
+                                    <label for="productReference" class="form-label col-sm-5" style="margin: 6px 0px;">Reference</label>
+                                    <div class=" col-sm-6"><input type="text" readonly class="form-control-plaintext" id="productReference" placeholder=""></div>
+                                </div>
+                                <div class="mb-sm-0 row">
+                                    <label for="productName" class="form-label col-sm-5" style="margin: 6px 0px;">Name</label>
+                                    <div class=" col-sm-6" style="padding-left: 0px;"><input type="text" readonly class="form-control-plaintext " id="productName" placeholder=""></div>
+                                </div>
+                                <div class="mb-sm-0 row">
+                                    <label for="productHWRevision" class="form-label col-sm-5" style="margin: 6px 0px;">HW Revision</label>
+                                    <div class=" col-sm-6"><input type="text" readonly class="form-control-plaintext" id="productHWRevision" placeholder=""></div>
+                                </div>
+                                <div class="mb-sm-0 row">
+                                    <label for="productFWRevision" class="form-label col-sm-5" style="margin: 6px 0px;">FW Revision</label>
+                                    <div class=" col-sm-6"><input type="text" readonly class="form-control-plaintext" id="productFWRevision" placeholder=""></div>
+                                </div>
                             </div>
                         </div>
                         <div class="card-footer user-select-none text-muted">
@@ -70,7 +89,7 @@
                             <h3>Live Measurement</h3>
                             <div>
                                 <button type="button" id="bntPauseResume" class="btn btn-success"><i class="bi bi-play-fill"></i></button>
-                                <button type="button" id="bntRecorde" class="btn btn-secondary" disabled><i class="bi bi-record-fill"></i></button>
+                                <button type="button" id="bntRecord" class="btn btn-secondary" disabled><i class="bi bi-record-fill"></i></button>
                             </div>
                         </div>
                         <div class="card-body d-flex flex-column align-items-center" style="min-height: 25em;">

@@ -73,6 +73,7 @@ const fluteServices = [
     "7c82e35a-d585-4424-94db-72140af95b4e", //  FLUTE Device Mode Range Characteristic
     "ed34a4e6-ae68-4099-831f-4c3d432ab806", //  FLUTE Measured Value Characteristic
     "c4400b8e-04bc-4076-9348-face6420560f", //  FLUTE Measured Value Unit Characteristic
+    "2eb59ac6-0922-43e5-9d8f-71cf7eb71b0a", //  DIS Customer Device Name Characteristic
     "f03339c2-d2ac-4c2d-bd47-eabff617e20b", //  Firmware Update OTA Base Address Characteristic
     "0899d7c8-9dec-4d99-9cea-da73d606db3b", //  Firmware Update OTA Confirmation Characteristic
     "8966d085-57b8-4fa0-8b0b-0439b668c3c8", //  Firmware Update OTA Raw Data Characteristic
@@ -88,6 +89,7 @@ bntBLEConnect.addEventListener("click", e => {
 
     fluteDevice = navigator.bluetooth.requestDevice({
         filters: [
+            {namePrefix: "F01B"},
             {namePrefix: "HT"}
         ],
         optionalServices: fluteServices
@@ -109,11 +111,6 @@ bntBLEConnect.addEventListener("click", e => {
                 preDebug.append(`${characteristics}\r\n`);
             }));
         });
-        
-        connectBtn.classList.add("d-none");
-        connectBtn.hidden = true;
-        disconnectBtn.classList.remove("d-none");
-        disconnectBtn.hidden = false;
 
         isDeviceConnected = true;
         return queue;
@@ -121,6 +118,12 @@ bntBLEConnect.addEventListener("click", e => {
     .catch(error => {
         preDebug.append(`${error}\r\n`);
     });
+
+    connectBtn.classList.add("d-none");
+    connectBtn.hidden = true;
+    disconnectBtn.classList.remove("d-none");
+    disconnectBtn.hidden = false;
+
 });
 
 bntBLEDisconnect.addEventListener("click", e => {
