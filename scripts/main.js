@@ -61,73 +61,106 @@ window.addEventListener("appinstalled", e => {
  */
 
 /**
- * ----- BEGIN BLE Connection Process -----
+ * ----- BEGIN BLE Process -----
  */
-var fluteDevice;
-var isDeviceConnected = false;
-const fluteServices = [
+const fluteServicesUUID = [
     "4de7e0fc-01b0-4693-b3fb-e7c14a957bff", //  BLE ADV + FLUTE Measurement Service
+    'device_information',                   //  Device Information Service (DIS 0x180A)
     "4eb81bd4-b229-4ca6-8a6f-583b78057dfa", //  Firmware Update OTA Service
-    "46561c3b-d66a-4038-bf64-19b9747370c8",
-    "eb7a6896-d9de-4a24-9945-93dff1793e43", //  FLUTE Device Mode Characteristic
-    "7c82e35a-d585-4424-94db-72140af95b4e", //  FLUTE Device Mode Range Characteristic
-    "ed34a4e6-ae68-4099-831f-4c3d432ab806", //  FLUTE Measured Value Characteristic
-    "c4400b8e-04bc-4076-9348-face6420560f", //  FLUTE Measured Value Unit Characteristic
-    "2eb59ac6-0922-43e5-9d8f-71cf7eb71b0a", //  DIS Customer Device Name Characteristic
-    "f03339c2-d2ac-4c2d-bd47-eabff617e20b", //  Firmware Update OTA Base Address Characteristic
-    "0899d7c8-9dec-4d99-9cea-da73d606db3b", //  Firmware Update OTA Confirmation Characteristic
-    "8966d085-57b8-4fa0-8b0b-0439b668c3c8", //  Firmware Update OTA Raw Data Characteristic
-    "00001809-0000-1000-8000-00805f9b34fb",
+    'battery_service',                      //  Baterry Service (BAS 0x180F)
 ];
+
+var fluteDevice = null;
+var fluteGATTServices = null;
+var fluteGATTCharateritics = [];
+
+var isDeviceConnected = false;
+
+
+/**
+ * "46561c3b-d66a-4038-bf64-19b9747370c8",
+ * "eb7a6896-d9de-4a24-9945-93dff1793e43", //  FLUTE Device Mode Characteristic
+ * "7c82e35a-d585-4424-94db-72140af95b4e", //  FLUTE Device Mode Range Characteristic
+ * "ed34a4e6-ae68-4099-831f-4c3d432ab806", //  FLUTE Measured Value Characteristic
+ * "c4400b8e-04bc-4076-9348-face6420560f", //  FLUTE Measured Value Unit Characteristic
+ * "2eb59ac6-0922-43e5-9d8f-71cf7eb71b0a", //  DIS Customer Device Name Characteristic
+ * "f03339c2-d2ac-4c2d-bd47-eabff617e20b", //  Firmware Update OTA Base Address Characteristic
+ * "0899d7c8-9dec-4d99-9cea-da73d606db3b", //  Firmware Update OTA Confirmation Characteristic
+ * "8966d085-57b8-4fa0-8b0b-0439b668c3c8", //  Firmware Update OTA Raw Data Characteristic
+ *  */ 
+
+//"00001809-0000-1000-8000-00805f9b34fb", {namePrefix: "HT"}
 
 let connectBtn = document.getElementById("bntBLEConnect");
 let disconnectBtn = document.getElementById("bntBLEDisconnect");
 
 bntBLEConnect.addEventListener("click", e => {
     preDebug.append(`button for BLE connection clicked\r\n`);
-    preDebug.append(`> Requesting Bluetooth Device...\r\n`);
+    console.log(`> Requesting Bluetooth Device...`);
 
-    fluteDevice = navigator.bluetooth.requestDevice({
+    navigator.bluetooth.requestDevice({
         filters: [
             {namePrefix: "F01B"},
-            {namePrefix: "HT"}
         ],
-        optionalServices: fluteServices
+        optionalServices: fluteServicesUUID
     })
     .then(device => {
+        console.log(`Device named '${device.name}' selected`);
+        console.log(device);
         fluteDevice = device;
+
         fluteDevice.addEventListener("gattserverdisconnected", onDisconnect);
+
+        console.log(`> Connecting to '${device.name}'...`);
         return device.gatt.connect();
     })
     .then(server => {
+        console.log(`Connected to '${server.device.name}'`);
+        console.log(server);
+        
+        console.log(`> Getting Services from '${server.device.name}'...`);
         return server.getPrimaryServices();
     })
     .then(services => {
-        preDebug.append(`> Getting Characteristics...\r\n`);
+        console.log(`${services.length} Service(s) found on it`);
+        console.log(services);
+        fluteGATTServices = services;
+
+        console.log(`> Getting Charateristic(s) from found service(s)...`);
         let queue = Promise.resolve();
         services.forEach(service => {
-            preDebug.append(service);
-            queue = queue.then(_ => service.getCharacteristics().then(characteristics => {
-                preDebug.append(`${characteristics}\r\n`);
-            }));
+            queue = queue
+            .then(_ => service.getCharacteristics())
+            .then(characteristics => {
+                console.log(`Service: ${service.device.name} - ${service.uuid}\n ${characteristics.length} Charateristic(s) found on selected Bluetooth Device`);
+                console.log(characteristics);
+                fluteGATTCharateritics.push(characteristics);
+                readCharateristic();
+            });
+            
+
+            // characteristics.forEach(characteristic => {
+            //     console.log(`Characteristic: ${characteristic.uuid} - ${getSupportedProperties(characteristic)}`);
+            // })
         });
 
-        isDeviceConnected = true;
-        return queue;
+        isDeviceConnected = fluteDevice.gatt.connected;
+        // return queue;
     })
     .catch(error => {
-        preDebug.append(`${error}\r\n`);
+        console.log(`${error}`);
     });
-
+    
     connectBtn.classList.add("d-none");
     connectBtn.hidden = true;
     disconnectBtn.classList.remove("d-none");
     disconnectBtn.hidden = false;
-
+    
 });
 
 bntBLEDisconnect.addEventListener("click", e => {
-    preDebug.append(`> Disconnecting from Bluetooth Device...\r\n`);
+    preDebug.append(`> button for BLE disconnection clicked\r\n`);
+    console.log(`> Disconnecting from Bluetooth Device...\r\n`);
     
     onDisconnect();
 });
@@ -137,7 +170,7 @@ function onDisconnect() {
     
     isDeviceConnected = false;
 
-    preDebug.append(`> Bluetooth Device disconnected\r\n`);
+    console.log(`> Bluetooth Device disconnected\r\n`);
     
     disconnectBtn.classList.add("d-none");
     disconnectBtn.hidden = true;
@@ -145,8 +178,21 @@ function onDisconnect() {
     connectBtn.hidden = false;
 }
 
+function readCharateristic() {
+    if (isDeviceConnected && fluteGATTCharateritics.length == 3) {
+        let queueReadChar = Promise.resolve();
+        fluteGATTCharateritics[2].forEach(characteristic => {
+            queueReadChar = queueReadChar
+            .then(_ => characteristic.readValue())
+            .then(value => {
+                console.log(`Device Informations Service ${characteristic.service.uuid} - Charateristic ${characteristic.uuid} - Value = ${value.getUint8().toString()}`);
+            });
+        });
+    }
+}
+
 /**
- * ----- END BLE Connection Process -----
+ * ----- END BLE Process -----
  */
 
 /**
