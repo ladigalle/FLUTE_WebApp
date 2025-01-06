@@ -165,7 +165,7 @@ bntBLEConnect.addEventListener("click", e => {
 });
 
 bntBLEDisconnect.addEventListener("click", e => {
-    preDebug.append(`> button for BLE disconnection clicked\r\n`);
+    preDebug.append(`button for BLE disconnection clicked\r\n`);
     console.log(`> Disconnecting from Bluetooth Device...\r\n`);
     
     onDisconnect();
@@ -281,22 +281,44 @@ bntPauseResume.addEventListener("click", e => {
         btnPR.classList.remove("btn-success");
         btnPR.classList.add("btn-warning");
         bntPauseResume.innerHTML = '<i class="bi bi-pause-fill"></i>';
-        debugRefresh = setInterval(updateChart, 250);
+        bntRecordStop.disabled = false;
+        debugRefresh = setInterval(updateMeasureValue, 250);
     } else {
         preDebug.append(`pause button for live measurment pressed\r\n`);
         isLiveMeasurePaused = true;
         btnPR.classList.remove("btn-warning");
         btnPR.classList.add("btn-success");
         bntPauseResume.innerHTML = '<i class="bi bi-play-fill"></i>';
+        bntRecordStop.disabled = true;
         clearInterval(debugRefresh);
     }
     
+});
+
+var isLiveMeasureRecorded = false;
+bntRecordStop.addEventListener("click", e => {
+    let btnRS = document.getElementById("bntRecordStop");
+
+    if (isLiveMeasureRecorded == true) {
+        preDebug.append(`play stop for live measurment pressed\r\n`);
+        isLiveMeasureRecorded = false;
+        btnRS.classList.remove("btn-outline-danger");
+        btnRS.classList.add("btn-danger");
+        bntRecordStop.innerHTML = '<i class="bi bi-record-fill"></i>';
+    } else {
+        preDebug.append(`play record for live measurment pressed\r\n`);
+        isLiveMeasureRecorded = true;
+        btnRS.classList.remove("btn-danger");
+        btnRS.classList.add("btn-outline-danger");
+        bntRecordStop.innerHTML = '<i class="bi bi-stop-fill"></i>';
+    }
 });
 
 // chart colors
 const ctx = document.getElementById('measureLineChart');
 var dataLabel = [];
 var dataValue = [];
+var recordedData = [];  //  Structure: {time, value}
 
 /* large line chart */
 Chart.defaults.font.family = "'Roboto Slab', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', 'Liberation Sans', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'";
@@ -339,17 +361,24 @@ options: {
 });
 
 let iLabel = 0;
-function updateChart () {
+let iRecord = 0;
+function updateMeasureValue () {
     if (dataValue.length > 30) {
         dataValue.shift();
     } else {
         dataLabel.push(`${iLabel}`);
-        iLabel++;
     }
 
+    iLabel++;
+    
     let val = Math.random()*(3000 - 0) + 0;
     measureValue.innerHTML = ('0000' + val.toFixed(0)).slice(-4);
     dataValue.push(val);
+    
+    if (isLiveMeasurePaused == false && isLiveMeasureRecorded == true) {
+        recordedData.push([iRecord, val]);
+        iRecord += 250;
+    }
 
     mlc.update();
 }
