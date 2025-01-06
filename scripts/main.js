@@ -135,7 +135,10 @@ bntBLEConnect.addEventListener("click", e => {
                 console.log(`Service: ${service.device.name} - ${service.uuid}\n ${characteristics.length} Charateristic(s) found on selected Bluetooth Device`);
                 console.log(characteristics);
                 fluteGATTCharateritics.push(characteristics);
-                readCharateristic();
+                if (service.uuid == '0000180a-0000-1000-8000-00805f9b34fb') {
+                    readDISCharateristic();
+                }
+                
             });
             
 
@@ -171,6 +174,12 @@ function onDisconnect() {
     isDeviceConnected = false;
 
     console.log(`> Bluetooth Device disconnected\r\n`);
+
+    fluteDevice = null;
+    fluteGATTServices = null;
+    fluteGATTCharateritics = [];
+
+    flushDISUI();
     
     disconnectBtn.classList.add("d-none");
     disconnectBtn.hidden = true;
@@ -178,17 +187,48 @@ function onDisconnect() {
     connectBtn.hidden = false;
 }
 
-function readCharateristic() {
-    if (isDeviceConnected && fluteGATTCharateritics.length == 3) {
+function BLEReadtoString(dataView) {
+    let str = "";
+    for (let i = 0; i < dataView.byteLength; i++) {
+        str += String.fromCharCode(dataView.getUint8(i));
+    }
+    return str;
+}
+
+function readDISCharateristic() {
+    if (isDeviceConnected) {
         let queueReadChar = Promise.resolve();
         fluteGATTCharateritics[2].forEach(characteristic => {
             queueReadChar = queueReadChar
             .then(_ => characteristic.readValue())
             .then(value => {
-                console.log(`Device Informations Service ${characteristic.service.uuid} - Charateristic ${characteristic.uuid} - Value = ${value.getUint8().toString()}`);
+                console.log(`Device Informations Service ${characteristic.service.uuid} - Charateristic ${characteristic.uuid} - Value = ${BLEReadtoString(value)}`);
+                updateDISUI(characteristic.uuid, value);
             });
         });
     }
+}
+
+function updateDISUI(cuuid, value) {
+    if (cuuid == '00002a24-0000-1000-8000-00805f9b34fb') {
+        productReference.value = BLEReadtoString(value);
+    } else if (cuuid == '00002a26-0000-1000-8000-00805f9b34fb') {
+        productFWRevision.value = BLEReadtoString(value);
+    } else if (cuuid == '00002a27-0000-1000-8000-00805f9b34fb') {
+        productHWRevision.value = BLEReadtoString(value);
+    } else if (cuuid == '00002a29-0000-1000-8000-00805f9b34fb') {
+        manufacturerName.value = BLEReadtoString(value);
+    } else if (cuuid == '2eb59ac6-0922-43e5-9d8f-71cf7eb71b0a') {
+        customerProductName.value = BLEReadtoString(value);
+    }
+}
+
+function flushDISUI() {
+    productReference.value = "";
+    productFWRevision.value = "";
+    productHWRevision.value = "";
+    manufacturerName.value = "";
+    customerProductName.value = "";
 }
 
 /**
