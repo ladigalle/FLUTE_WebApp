@@ -134,7 +134,10 @@ bntBLEConnect.addEventListener("click", e => {
             .then(characteristics => {
                 console.log(`Service: ${service.device.name} - ${service.uuid}\n ${characteristics.length} Charateristic(s) found on selected Bluetooth Device`);
                 console.log(characteristics);
+                
+                fluteGATTCharateritics.push(service.uuid);
                 fluteGATTCharateritics.push(characteristics);
+                
                 if (service.uuid == '0000180a-0000-1000-8000-00805f9b34fb') {
                     readDISCharateristic();
                 }
@@ -198,7 +201,7 @@ function BLEReadtoString(dataView) {
 function readDISCharateristic() {
     if (isDeviceConnected) {
         let queueReadChar = Promise.resolve();
-        fluteGATTCharateritics[2].forEach(characteristic => {
+        fluteGATTCharateritics[fluteGATTCharateritics.indexOf('0000180a-0000-1000-8000-00805f9b34fb')+1].forEach(characteristic => {
             queueReadChar = queueReadChar
             .then(_ => characteristic.readValue())
             .then(value => {
