@@ -300,9 +300,7 @@ bntPauseResume.addEventListener("click", e => {
         bntRecordStop.disabled = true;
         clearInterval(debugRefresh);
     }
-    
 });
-
 
 function formatNumber (value) {
     return ('00' + value.toFixed(0)).slice(-2);
@@ -312,7 +310,7 @@ function updateSessionList() {
     let list = "";
 
     sessionsRecordList.forEach(session => {
-        list += `<tr><td>${session[0]}</td><td>${session[1]}</td><td><button type="button" id="bntSessionDownload" class="btn btn-sm btn-outline-info"><i class="bi bi-download"></i></button>&nbsp;<button type="button" id="bntSessionDelete" class="btn btn-sm btn-outline-danger" onclick="deleteSession(this)" value=${sessionsRecordList.indexOf(session)}><i class="bi bi-trash-fill"></i></button></td></tr>`;
+        list += `<tr><td>${session[0]}</td><td>${session[1]}</td><td><button type="button" id="bntSessionDownload" class="btn btn-sm btn-outline-info" onclick="exportSessions2CSV(this)" value=${sessionsRecordList.indexOf(session)}><i class="bi bi-download"></i></button>&nbsp;<button type="button" id="bntSessionDelete" class="btn btn-sm btn-outline-danger" onclick="deleteSession(this)" value=${sessionsRecordList.indexOf(session)}><i class="bi bi-trash-fill"></i></button></td></tr>`;
     })
 
     sessionsList.innerHTML = list;
@@ -329,7 +327,29 @@ function deleteSession(e) {
             sessionsNothing.hidden = false;
             divSN.classList.remove("d-none");
         }
-        
+    }
+}
+
+function exportSessions2CSV(e) {
+    let csvContent = "data:text/csv;charset=utf-8,";
+
+    if (e.id = "bntSessionDownload"){
+        let session = sessionsRecordList[e.value];
+        let filename = session[1] + ".csv";
+        csvContent += `Time(ms),Value(${'getModeUnit'})\r\n`;
+        let data = session[2];
+
+        data.forEach(row => {
+            csvContent += row.join(",") + "\r\n";
+        })
+
+        let encodedURI = encodeURI(csvContent);
+        let tmpLink = document.createElement("a");
+        tmpLink.setAttribute("href", encodedURI);
+        tmpLink.setAttribute("download", filename);
+        document.body.appendChild(tmpLink);
+        tmpLink.click();
+        document.body.removeChild(tmpLink);
     }
 }
 
@@ -352,9 +372,9 @@ bntRecordStop.addEventListener("click", e => {
         }
 
         let timestamp = new Date();
-        let nameSession = `${timestamp.getFullYear()}-${formatNumber(timestamp.getMonth()+1)}-${formatNumber(timestamp.getDate())}_${formatNumber(timestamp.getHours())}-${formatNumber(timestamp.getMinutes())}-${formatNumber(timestamp.getSeconds())}_getMode`;
+        let nameSession = `${timestamp.getFullYear()}-${formatNumber(timestamp.getMonth()+1)}-${formatNumber(timestamp.getDate())}_${formatNumber(timestamp.getHours())}-${formatNumber(timestamp.getMinutes())}-${formatNumber(timestamp.getSeconds())}_${'getMode'}`;
         nbSessions++;
-        sessionsRecordList.push([nbSessions, nameSession]);
+        sessionsRecordList.push([nbSessions, nameSession, recordedData]);
         updateSessionList();
         recordedData = [];
 
