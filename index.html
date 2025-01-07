@@ -53,28 +53,28 @@
                         <div class="card-body">
                             <div id="divDeviceDetails">
                                 <div class="mb-sm-0 row">
-                                    <label for="manufacturerName" class="form-label col-sm-5" style="margin: 6px 0px;">Manufacturer</label>
-                                    <div class=" col-sm-6"><input type="text" readonly class="form-control-plaintext" id="manufacturerName" placeholder=" "></div>
+                                    <label for="manufacturerName" class="form-label col-5" style="margin: 6px 0px;">Manufacturer</label>
+                                    <div class=" col-6"><input type="text" readonly class="form-control-plaintext" id="manufacturerName" placeholder=" "></div>
                                 </div>
                                 <div class="mb-sm-0 row">
-                                    <label for="productReference" class="form-label col-sm-5" style="margin: 6px 0px;">Reference</label>
-                                    <div class=" col-sm-6"><input type="text" readonly class="form-control-plaintext" id="productReference" placeholder=" "></div>
+                                    <label for="productReference" class="form-label col-5" style="margin: 6px 0px;">Reference</label>
+                                    <div class=" col-6"><input type="text" readonly class="form-control-plaintext" id="productReference" placeholder=" "></div>
                                 </div>
                                 <div class="mb-sm-0 row">
-                                    <label for="customerProductName" class="form-label col-sm-5" style="margin: 6px 0px;">Name</label>
-                                    <div class=" col-sm-6"><input type="text" readonly class="form-control-plaintext " id="customerProductName" placeholder=" "></div>
+                                    <label for="customerProductName" class="form-label col-5" style="margin: 6px 0px;">Name</label>
+                                    <div class=" col-6"><input type="text" readonly class="form-control-plaintext " id="customerProductName" placeholder=" "></div>
                                 </div>
                                 <div class="mb-sm-0 row">
-                                    <label for="productHWRevision" class="form-label col-sm-5" style="margin: 6px 0px;">HW Revision</label>
-                                    <div class=" col-sm-6"><input type="text" readonly class="form-control-plaintext" id="productHWRevision" placeholder=" "></div>
+                                    <label for="productHWRevision" class="form-label col-5" style="margin: 6px 0px;">HW Revision</label>
+                                    <div class=" col-6"><input type="text" readonly class="form-control-plaintext" id="productHWRevision" placeholder=" "></div>
                                 </div>
                                 <div class="mb-sm-0 row">
-                                    <label for="productFWRevision" class="form-label col-sm-5" style="margin: 6px 0px;">FW Revision</label>
-                                    <div class=" col-sm-6"><input type="text" readonly class="form-control-plaintext" id="productFWRevision" placeholder=" "></div>
+                                    <label for="productFWRevision" class="form-label col-5" style="margin: 6px 0px;">FW Revision</label>
+                                    <div class=" col-6"><input type="text" readonly class="form-control-plaintext" id="productFWRevision" placeholder=" "></div>
                                 </div>
                             </div>
                         </div>
-                        <div class="card-footer user-select-none text-muted">
+                        <div class="card-footer user-select-none text-muted" style="min-height: 65px;">
                             Connect to your FLUTE to get infos and live measurement!
                         </div>
                         <div class="card-footer d-flex justify-content-between align-items-center d-none" hidden>
@@ -122,7 +122,18 @@
                         <div class="card-header d-flex justify-content-between align-items-center user-select-none">
                             <h3>Sessions</h3>
                         </div>
-                        <div class="card-body">Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi unde itaque hic dolor ipsam quisquam dolores illo dolorem omnis! Neque architecto maxime vel fugiat at expedita, doloribus porro ducimus molestiae!</div>
+                        <div class="card-body">
+                            <table class="table align-middle table-hover">
+                                <thead>
+                                    <tr><th>#</th><th>Name</th><th style="min-width: 85px;">Actions</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>1</td><td>25-01-07_08-08_Voltmeter</td><td><button type="button" id="bntDownload" class="btn btn-sm btn-outline-info"><i class="bi bi-download"></i></button>&nbsp;<button type="button" id="bntDelete" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash-fill"></i></button></td></tr>
+                                    <tr><td>2</td><td>25-01-07_08-08_Ohmmeter</td><td><button type="button" id="bntDownload" class="btn btn-sm btn-outline-info"><i class="bi bi-download"></i></button>&nbsp;<button type="button" id="bntDelete" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash-fill"></i></button></td></tr>
+                                </tbody>
+                                <caption><i>Saved in browser cache</i></caption>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

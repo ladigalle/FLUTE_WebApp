@@ -6,23 +6,40 @@ body {
     width: 8em;
 }
 
+#divDeviceDetails > div > label {
+    min-width: 130px;
+}
 .labelLiveMeasurementMode {
     margin: 6px .5em 8px 0;
 }
 
+div#liveMeasurementSimple {
+    height: 60vh;
+} 
+
 div#liveMeasurementAdvanced {
-    height:40vh; 
+    height: 60vh; 
     width: 350px;
 }
 
 @media (min-width: 390px) {
+    div#liveMeasurementSimple {
+        height: 60vh;
+    } 
+    
     div#liveMeasurementAdvanced {
-        width:90vw;
+        height: 60vh;
+        width: 90vw;
     }
 }
 
-@media (min-width: 992px) {
+@media (min-width: 1210px) {
+    div#liveMeasurementSimple {
+        height: 40vh;
+    } 
+
     div#liveMeasurementAdvanced {
-        width:45vw;
+        height: 40vh;
+        width: 45vw;
     }
 }
