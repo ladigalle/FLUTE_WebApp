@@ -1,16 +1,5 @@
-/**
- * ----- BEGIN PWA Installation Process -----
- */
-
-// Remove install button and banner
-const appInstalled = () => {
-    installButton.hidden = true;
-    installBanner.hidden = true;
-    preDebug.append("App installed\r\n");
-}
-
-// Register serviceWorker on page loading
 window.onload = () => {
+    // Register serviceWorker on page loading
     "use strict";
 
     if ("serviceWorker" in navigator && document.URL.split(":")[0] !== "file") {
@@ -20,6 +9,19 @@ window.onload = () => {
     if (window.matchMedia('(display-mode: standalone)').matches) {  
         appInstalled();
     }
+
+}
+
+
+/**
+ * ----- BEGIN PWA Installation Process -----
+ */
+
+// Remove install button and banner
+const appInstalled = () => {
+    installButton.hidden = true;
+    installBanner.hidden = true;
+    preDebug.append("App installed\r\n");
 }
 
 // Catch PWA install prompt and manage it 
@@ -241,40 +243,46 @@ function flushDISUI() {
 /**
  * ----- BEGIN UI Interaction Process -----
  */
+const sessionsRecordDB = "sessionsRecordDB"
+const byteSize = str => new Blob([str]).size;
+
+let divMS = document.getElementById("liveMeasurementSimple");
+let divMA = document.getElementById("liveMeasurementAdvanced");
+let btnPR = document.getElementById("bntPauseResume");
+let btnRS = document.getElementById("bntRecordStop");
+let divSN = document.getElementById("sessionsNothing");
+let divST = document.getElementById("sessionsTable");
+
 // Enable advanced live measurement mode
 var nbClickSLM = 0;
 liveMeasurementMode.addEventListener("click", e => {
     preDebug.append(`switch for live mode state change ${e.currentTarget.checked}\r\n`);
-    let simpleDiv = document.getElementById("liveMeasurementSimple");
-    let advancedDiv = document.getElementById("liveMeasurementAdvanced");
 
     if (e.currentTarget.checked == true) {
-        simpleDiv.classList.add("d-none");
-        simpleDiv.classList.remove("d-lg-flex");
-        simpleDiv.hidden = true;
-        advancedDiv.classList.remove("d-none");
-        advancedDiv.classList.add("d-lg-flex");
-        advancedDiv.hidden = false;
+        divMS.classList.add("d-none");
+        divMS.classList.remove("d-lg-flex");
+        divMS.hidden = true;
+        divMA.classList.remove("d-none");
+        divMA.classList.add("d-lg-flex");
+        divMA.hidden = false;
     } else {
-        advancedDiv.classList.add("d-none");
-        advancedDiv.classList.remove("d-lg-flex");
-        advancedDiv.hidden = true;
-        simpleDiv.classList.remove("d-none");
-        simpleDiv.classList.add("d-lg-flex");
-        simpleDiv.hidden = false;
+        divMA.classList.add("d-none");
+        divMA.classList.remove("d-lg-flex");
+        divMA.hidden = true;
+        divMS.classList.remove("d-none");
+        divMS.classList.add("d-lg-flex");
+        divMS.hidden = false;
     }
 
     nbClickSLM++;
     if (nbClickSLM > 42) {
-        logoNavBar.style.transform = 'rotate(' + 180 + 'deg)';
+        logoNavBar.style.transform = `rotate(${180}deg)`;
     }
 });
 
 var isLiveMeasurePaused = true;
 var debugRefresh;
 bntPauseResume.addEventListener("click", e => {
-    let btnPR = document.getElementById("bntPauseResume");
-
     if (isLiveMeasurePaused == true) {
         preDebug.append(`play button for live measurment pressed\r\n`);
         isLiveMeasurePaused = false;
@@ -295,16 +303,62 @@ bntPauseResume.addEventListener("click", e => {
     
 });
 
-var isLiveMeasureRecorded = false;
-bntRecordStop.addEventListener("click", e => {
-    let btnRS = document.getElementById("bntRecordStop");
 
+function formatNumber (value) {
+    return ('00' + value.toFixed(0)).slice(-2);
+}
+
+function updateSessionList() {
+    let list = "";
+
+    sessionsRecordList.forEach(session => {
+        list += `<tr><td>${session[0]}</td><td>${session[1]}</td><td><button type="button" id="bntSessionDownload" class="btn btn-sm btn-outline-info"><i class="bi bi-download"></i></button>&nbsp;<button type="button" id="bntSessionDelete" class="btn btn-sm btn-outline-danger" onclick="deleteSession(this)" value=${sessionsRecordList.indexOf(session)}><i class="bi bi-trash-fill"></i></button></td></tr>`;
+    })
+
+    sessionsList.innerHTML = list;
+}
+
+function deleteSession(e) {
+    if (e.id = "bntSessionDelete"){
+        sessionsRecordList.splice((e.value), 1);
+        if (sessionsRecordList.length > 0) {
+            updateSessionList();
+        } else {
+            sessionsTable.hidden = true;
+            divST.classList.add("d-none");
+            sessionsNothing.hidden = false;
+            divSN.classList.remove("d-none");
+        }
+        
+    }
+}
+
+var isLiveMeasureRecorded = false;
+var sessionsRecordList = [];
+var nbSessions = 0;
+bntRecordStop.addEventListener("click", e => {
     if (isLiveMeasureRecorded == true) {
         preDebug.append(`play stop for live measurment pressed\r\n`);
         isLiveMeasureRecorded = false;
         btnRS.classList.remove("btn-outline-danger");
         btnRS.classList.add("btn-danger");
         bntRecordStop.innerHTML = '<i class="bi bi-record-fill"></i>';
+
+        if (sessionsRecordList.length == 0) {
+            sessionsNothing.hidden = true;
+            divSN.classList.add("d-none");
+            sessionsTable.hidden = false;
+            divST.classList.remove("d-none");
+        }
+
+        let timestamp = new Date();
+        let nameSession = `${timestamp.getFullYear()}-${formatNumber(timestamp.getMonth()+1)}-${formatNumber(timestamp.getDate())}_${formatNumber(timestamp.getHours())}-${formatNumber(timestamp.getMinutes())}-${formatNumber(timestamp.getSeconds())}_getMode`;
+        nbSessions++;
+        sessionsRecordList.push([nbSessions, nameSession]);
+        updateSessionList();
+        recordedData = [];
+
+
     } else {
         preDebug.append(`play record for live measurment pressed\r\n`);
         isLiveMeasureRecorded = true;
