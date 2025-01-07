@@ -241,9 +241,25 @@ function flushDISUI() {
  */
 
 /**
+ * ----- BEGIN Indexed DB Process -----
+ */
+const sessionsRecordDBname = "flute-session-db";
+const requestDB = window.indexedDB.open(sessionsRecordDBname, 1);
+
+requestDB.onerror = (e) => {
+    console.error(`It seems that your web-browser is not compatible with the in-browser web storage for recorded sessions. Please download it before exiting the app to avoid any lost!\r\nError code: ${e.target.error?.message}`);
+};
+requestDB.onsuccess = (e) => {
+    const sessionsRecordDB = e.target.result;
+};
+
+/**
+ * ----- END Indexed DB Process -----
+ */
+
+/**
  * ----- BEGIN UI Interaction Process -----
  */
-const sessionsRecordDB = "sessionsRecordDB"
 const byteSize = str => new Blob([str]).size;
 
 let divMS = document.getElementById("liveMeasurementSimple");
