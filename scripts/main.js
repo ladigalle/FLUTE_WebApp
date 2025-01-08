@@ -245,14 +245,41 @@ function flushDISUI() {
  */
 const sessionsRecordDBname = "flute-session-db";
 const requestDB = window.indexedDB.open(sessionsRecordDBname, 1);
+var sessionsRecordDB;
+var isDBaccessOK = false;
 
 requestDB.onerror = (e) => {
-    console.error(`It seems that your web-browser is not compatible with the in-browser web storage for recorded sessions. Please download it before exiting the app to avoid any lost!\r\nError code: ${e.target.error?.message}`);
+    console.error(`It seems that your web-browser is not compatible with the in-browser web storage for recorded sessions. Please update your browser to use this feature\r\nError code: ${e.target.error?.message}`);
+    pSessionNothing.innerHTML = `It seems that your web-browser is not compatible with the in-browser web storage for recorded sessions. Please update your browser to use this feature\r\nError code: ${e.target.error?.message}`;
 };
 requestDB.onsuccess = (e) => {
-    const sessionsRecordDB = e.target.result;
-};
+    isDBaccessOK = true;
+    sessionsRecordDB = sessionsRecordDB = e.target.result;
+    var sOS = sessionsRecordDB.transaction("sessions", "readwrite").objectStore("sessions");
 
+    // Get the last recoded session key and update session list
+    sOS.getAllKeys().onsuccess = (e) => {
+        nbSessions =  e.target.result[e.target.result.length -1];
+        updateSessionsList();
+    };
+};
+requestDB.onupgradeneeded = (e) => {
+    sessionsRecordDB = e.target.result;
+
+    const objectStore = sessionsRecordDB.createObjectStore("sessions", {autoIncrement: true});
+    
+    objectStore.createIndex("name", "name", {unique: false});
+    objectStore.createIndex("unit", "unit", {unique: false});
+    objectStore.createIndex("data", "data", {unique: false});
+
+    objectStore.transaction.oncomplete = (e) => {
+        isDBaccessOK = true;
+        
+        // let sOS = sessionsRecordDB.transaction("sessions", "readwrite").objectStore("sessions");
+        // sOS.add({name: "2025-01-08_08-49-00_Demo", unit: "mv", data: [[0,2672.529797978646],[250,9.024946619340612],[500,1400.5210073033013],[750,1657.6287665486884]]});
+        // sOS.add({name: "2025-01-08_09-15-00_Demo", unit: "mv", data: [[0,1657.6287665486884],[250,1400.5210073033013],[500,9.024946619340612],[750,2672.529797978646]]});
+    }
+}
 /**
  * ----- END Indexed DB Process -----
  */
@@ -318,42 +345,81 @@ bntPauseResume.addEventListener("click", e => {
     }
 });
 
+var isLiveMeasureRecorded = false;
+var sessionsRecordList = [];
+var nbSessions = 0;
+
 function formatNumber (value) {
     return ('00' + value.toFixed(0)).slice(-2);
 }
 
-function updateSessionList() {
-    let list = "";
+function updateSessionsList() {
+    if (nbSessions > 0) {
+        sessionsNothing.hidden = true;
+        divSN.classList.add("d-none");
+        sessionsTable.hidden = false;
+        divST.classList.remove("d-none");
+    }
 
-    sessionsRecordList.forEach(session => {
-        list += `<tr><td>${session[0]}</td><td>${session[1]}</td><td><button type="button" id="bntSessionDownload" class="btn btn-sm btn-outline-info" onclick="exportSessions2CSV(this)" value=${sessionsRecordList.indexOf(session)}><i class="bi bi-download"></i></button>&nbsp;<button type="button" id="bntSessionDelete" class="btn btn-sm btn-outline-danger" onclick="deleteSession(this)" value=${sessionsRecordList.indexOf(session)}><i class="bi bi-trash-fill"></i></button></td></tr>`;
-    })
+    if (isDBaccessOK) {
+        let sOS = sessionsRecordDB.transaction("sessions", "readwrite").objectStore("sessions");
+        sessionsRecordList = [];
+        
+        sOS.openCursor().onsuccess = (e) => {
+            let list = "";
+            let cursor =  e.target.result;
+            
+            if (cursor) {
+                sessionsRecordList.push([cursor.key, cursor.value]);
 
-    sessionsList.innerHTML = list;
+                sessionsRecordList.forEach(session => {
+                    list += `<tr><td>${session[0]}</td><td>${session[1].name}</td><td><button type="button" id="bntSessionDownload" class="btn btn-sm btn-outline-info" onclick="exportSession2CSV(this)" value=${sessionsRecordList.indexOf(session)}><i class="bi bi-download"></i></button>&nbsp;<button type="button" id="bntSessionDelete" class="btn btn-sm btn-outline-danger" onclick="deleteSession(this)" value=${session[0]}><i class="bi bi-trash-fill"></i></button></td></tr>`;
+                })
+                
+                sessionsList.innerHTML = list;
+                cursor.continue();
+            }
+        };
+    }    
 }
 
-function deleteSession(e) {
-    if (e.id = "bntSessionDelete"){
-        sessionsRecordList.splice((e.value), 1);
-        if (sessionsRecordList.length > 0) {
-            updateSessionList();
-        } else {
-            sessionsTable.hidden = true;
-            divST.classList.add("d-none");
-            sessionsNothing.hidden = false;
-            divSN.classList.remove("d-none");
+function deleteSession(b) {
+    if (b.id = "bntSessionDelete"){
+        if (isDBaccessOK) {
+            let sOS = sessionsRecordDB.transaction("sessions", "readwrite").objectStore("sessions");
+            sOS.delete(parseInt(b.value)).onsuccess = (d) => {
+                sOS.count().onsuccess = (e) => {
+                    if (e.target.result > 0) {
+                        updateSessionsList();
+                    } else {
+                        sessionsTable.hidden = true;
+                        divST.classList.add("d-none");
+                        sessionsNothing.hidden = false;
+                        divSN.classList.remove("d-none");
+                    }
+                };
+            };
         }
+        // sessionsRecordList.splice((e.value), 1);
+        // if (sessionsRecordList.length > 0) {
+        //     updateSessionsList();
+        // } else {
+        //     sessionsTable.hidden = true;
+        //     divST.classList.add("d-none");
+        //     sessionsNothing.hidden = false;
+        //     divSN.classList.remove("d-none");
+        // }
     }
 }
 
-function exportSessions2CSV(e) {
+function exportSession2CSV(e) {
     let csvContent = "data:text/csv;charset=utf-8,";
 
     if (e.id = "bntSessionDownload"){
         let session = sessionsRecordList[e.value];
-        let filename = session[1] + ".csv";
-        csvContent += `Time(ms),Value(${'getModeUnit'})\r\n`;
-        let data = session[2];
+        let filename = session[1].name + ".csv";
+        csvContent += `Time(ms),Value(${session[1].unit})\r\n`;
+        let data = session[1].data;
 
         data.forEach(row => {
             csvContent += row.join(",") + "\r\n";
@@ -369,9 +435,7 @@ function exportSessions2CSV(e) {
     }
 }
 
-var isLiveMeasureRecorded = false;
-var sessionsRecordList = [];
-var nbSessions = 0;
+
 bntRecordStop.addEventListener("click", e => {
     if (isLiveMeasureRecorded == true) {
         preDebug.append(`play stop for live measurment pressed\r\n`);
@@ -380,19 +444,33 @@ bntRecordStop.addEventListener("click", e => {
         btnRS.classList.add("btn-danger");
         bntRecordStop.innerHTML = '<i class="bi bi-record-fill"></i>';
 
-        if (sessionsRecordList.length == 0) {
-            sessionsNothing.hidden = true;
-            divSN.classList.add("d-none");
-            sessionsTable.hidden = false;
-            divST.classList.remove("d-none");
+        // if (sessionsRecordList.length == 0) {
+        //     sessionsNothing.hidden = true;
+        //     divSN.classList.add("d-none");
+        //     sessionsTable.hidden = false;
+        //     divST.classList.remove("d-none");
+        // }
+
+        if (isDBaccessOK) {
+            let sOS = sessionsRecordDB.transaction("sessions", "readwrite").objectStore("sessions");
+            let timestamp = new Date();
+            let sessionName = `${timestamp.getFullYear()}-${formatNumber(timestamp.getMonth()+1)}-${formatNumber(timestamp.getDate())}_${formatNumber(timestamp.getHours())}-${formatNumber(timestamp.getMinutes())}-${formatNumber(timestamp.getSeconds())}_getMode`;
+
+            sOS.add({name: sessionName, unit: 'getModeUnit', data: recordedData});
+            recordedData = [];
+            // Get the last recoded session key and update session list
+            sOS.getAllKeys().onsuccess = (e) => {
+                nbSessions =  e.target.result[e.target.result.length -1];
+                updateSessionsList();
+            };
         }
 
-        let timestamp = new Date();
-        let nameSession = `${timestamp.getFullYear()}-${formatNumber(timestamp.getMonth()+1)}-${formatNumber(timestamp.getDate())}_${formatNumber(timestamp.getHours())}-${formatNumber(timestamp.getMinutes())}-${formatNumber(timestamp.getSeconds())}_${'getMode'}`;
-        nbSessions++;
-        sessionsRecordList.push([nbSessions, nameSession, recordedData]);
-        updateSessionList();
-        recordedData = [];
+        // let timestamp = new Date();
+        // let sessionName = `${timestamp.getFullYear()}-${formatNumber(timestamp.getMonth()+1)}-${formatNumber(timestamp.getDate())}_${formatNumber(timestamp.getHours())}-${formatNumber(timestamp.getMinutes())}-${formatNumber(timestamp.getSeconds())}_getMode`;
+        // nbSessions++;
+        // sessionsRecordList.push([nbSessions, sessionName, 'getModeUnit', recordedData]);
+        // updateSessionsList();
+        // recordedData = [];
 
 
     } else {
