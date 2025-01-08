@@ -9,7 +9,6 @@ window.onload = () => {
     if (window.matchMedia('(display-mode: standalone)').matches) {  
         appInstalled();
     }
-
 }
 
 
@@ -30,11 +29,8 @@ window.addEventListener("beforeinstallprompt", e => {
     const showDefaultPrompt = new URLSearchParams(location.search).has("showDefaultPrompt");
     preDebug.append(`> beforeinstallprompt fired with platforms: ${e.platforms.join(',')}\r\n`);
     
-    
     if (showDefaultPrompt) {
-      preDebug.append(
-        "Default PWA mini info-bar on mobile should show up. Clear site settings if not.\r\n"
-      );
+      preDebug.append("Default PWA mini info-bar on mobile should show up. Clear site settings if not.\r\n");
       return;
     }
 
@@ -49,7 +45,7 @@ window.addEventListener("beforeinstallprompt", e => {
     
     installButton.onclick = () => {
         preDebug.append("Waiting for user choice...\r\n");
-      e.prompt();
+        e.prompt();
     };
 });
 
@@ -62,6 +58,7 @@ window.addEventListener("appinstalled", e => {
  * ----- END PWA Installation Process -----
  */
 
+
 /**
  * ----- BEGIN BLE Process -----
  */
@@ -69,7 +66,7 @@ const fluteServicesUUID = [
     "4de7e0fc-01b0-4693-b3fb-e7c14a957bff", //  BLE ADV + FLUTE Measurement Service
     'device_information',                   //  Device Information Service (DIS 0x180A)
     "4eb81bd4-b229-4ca6-8a6f-583b78057dfa", //  Firmware Update OTA Service
-    'battery_service',                      //  Baterry Service (BAS 0x180F)
+    'battery_service',                      //  BAttery Service (BAS 0x180F)
 ];
 
 var fluteDevice = null;
@@ -77,7 +74,6 @@ var fluteGATTServices = null;
 var fluteGATTCharateritics = [];
 
 var isDeviceConnected = false;
-
 
 /**
  * "46561c3b-d66a-4038-bf64-19b9747370c8",
@@ -91,19 +87,17 @@ var isDeviceConnected = false;
  * "8966d085-57b8-4fa0-8b0b-0439b668c3c8", //  Firmware Update OTA Raw Data Characteristic
  *  */ 
 
-//"00001809-0000-1000-8000-00805f9b34fb", {namePrefix: "HT"}
+//  "00001809-0000-1000-8000-00805f9b34fb", {namePrefix: "HT"}  //  Used for debug with demo example
 
-let connectBtn = document.getElementById("bntBLEConnect");
-let disconnectBtn = document.getElementById("bntBLEDisconnect");
+let btnBC = document.getElementById("btnBLEConnect");
+let btnBD = document.getElementById("btnBLEDisconnect");
 
-bntBLEConnect.addEventListener("click", e => {
+btnBLEConnect.addEventListener("click", e => {
     preDebug.append(`button for BLE connection clicked\r\n`);
     console.log(`> Requesting Bluetooth Device...`);
 
     navigator.bluetooth.requestDevice({
-        filters: [
-            {namePrefix: "F01B"},
-        ],
+        filters: [{namePrefix: "F01B"}],
         optionalServices: fluteServicesUUID
     })
     .then(device => {
@@ -141,32 +135,24 @@ bntBLEConnect.addEventListener("click", e => {
                 fluteGATTCharateritics.push(characteristics);
                 
                 if (service.uuid == '0000180a-0000-1000-8000-00805f9b34fb') {
-                    readDISCharateristic();
+                    readDISCharateristics();
+                } else if (service.uuid == '0000180f-0000-1000-8000-00805f9b34fb') {
+                    readNotifyBASCharateristics();
                 }
-                
             });
-            
-
-            // characteristics.forEach(characteristic => {
-            //     console.log(`Characteristic: ${characteristic.uuid} - ${getSupportedProperties(characteristic)}`);
-            // })
         });
-
+        
         isDeviceConnected = fluteDevice.gatt.connected;
-        // return queue;
+    })
+    .then(n => {
+        updateUIDevice();
     })
     .catch(error => {
-        console.log(`${error}`);
+        console.error(`${error}`);
     });
-    
-    connectBtn.classList.add("d-none");
-    connectBtn.hidden = true;
-    disconnectBtn.classList.remove("d-none");
-    disconnectBtn.hidden = false;
-    
 });
 
-bntBLEDisconnect.addEventListener("click", e => {
+btnBLEDisconnect.addEventListener("click", e => {
     preDebug.append(`button for BLE disconnection clicked\r\n`);
     console.log(`> Disconnecting from Bluetooth Device...\r\n`);
     
@@ -184,14 +170,11 @@ function onDisconnect() {
     fluteGATTServices = null;
     fluteGATTCharateritics = [];
 
-    flushDISUI();
-    
-    disconnectBtn.classList.add("d-none");
-    disconnectBtn.hidden = true;
-    connectBtn.classList.remove("d-none");
-    connectBtn.hidden = false;
+    flushUIDISCharacteristics();
+    updateUIDevice();
 }
 
+//  Raw BLE values <-> Typed values converters functions
 function BLEReadtoString(dataView) {
     let str = "";
     for (let i = 0; i < dataView.byteLength; i++) {
@@ -200,7 +183,8 @@ function BLEReadtoString(dataView) {
     return str;
 }
 
-function readDISCharateristic() {
+//  Functions for DIS (Device Informations Service) Charateristics
+function readDISCharateristics() {
     if (isDeviceConnected) {
         let queueReadChar = Promise.resolve();
         fluteGATTCharateritics[fluteGATTCharateritics.indexOf('0000180a-0000-1000-8000-00805f9b34fb')+1].forEach(characteristic => {
@@ -208,13 +192,13 @@ function readDISCharateristic() {
             .then(_ => characteristic.readValue())
             .then(value => {
                 console.log(`Device Informations Service ${characteristic.service.uuid} - Charateristic ${characteristic.uuid} - Value = ${BLEReadtoString(value)}`);
-                updateDISUI(characteristic.uuid, value);
+                updateUIDISCharacteristics(characteristic.uuid, value);
             });
         });
     }
 }
 
-function updateDISUI(cuuid, value) {
+function updateUIDISCharacteristics(cuuid, value) {
     if (cuuid == '00002a24-0000-1000-8000-00805f9b34fb') {
         productReference.value = BLEReadtoString(value);
     } else if (cuuid == '00002a26-0000-1000-8000-00805f9b34fb') {
@@ -228,7 +212,7 @@ function updateDISUI(cuuid, value) {
     }
 }
 
-function flushDISUI() {
+function flushUIDISCharacteristics() {
     productReference.value = "";
     productFWRevision.value = "";
     productHWRevision.value = "";
@@ -236,9 +220,15 @@ function flushDISUI() {
     customerProductName.value = "";
 }
 
+//  Functions for BAS (BAttery Service) Charateristics
+function readNotifyBASCharateristics() {
+    return null;
+}
+
 /**
  * ----- END BLE Process -----
  */
+
 
 /**
  * ----- BEGIN Indexed DB Process -----
@@ -252,17 +242,19 @@ requestDB.onerror = (e) => {
     console.error(`It seems that your web-browser is not compatible with the in-browser web storage for recorded sessions. Please update your browser to use this feature\r\nError code: ${e.target.error?.message}`);
     pSessionNothing.innerHTML = `It seems that your web-browser is not compatible with the in-browser web storage for recorded sessions. Please update your browser to use this feature\r\nError code: ${e.target.error?.message}`;
 };
+//  Connection to Indexed DB and check for existing recorded sessions
 requestDB.onsuccess = (e) => {
     isDBaccessOK = true;
     sessionsRecordDB = sessionsRecordDB = e.target.result;
     var sOS = sessionsRecordDB.transaction("sessions", "readwrite").objectStore("sessions");
 
-    // Get the last recoded session key and update session list
+    // Get the last recorded session key and update session list
     sOS.getAllKeys().onsuccess = (e) => {
         nbSessions =  e.target.result[e.target.result.length -1];
         updateSessionsList();
     };
 };
+//  Create an Indexed DB and set the structure to store sessions inside
 requestDB.onupgradeneeded = (e) => {
     sessionsRecordDB = e.target.result;
 
@@ -274,27 +266,50 @@ requestDB.onupgradeneeded = (e) => {
 
     objectStore.transaction.oncomplete = (e) => {
         isDBaccessOK = true;
-        
-        // let sOS = sessionsRecordDB.transaction("sessions", "readwrite").objectStore("sessions");
-        // sOS.add({name: "2025-01-08_08-49-00_Demo", unit: "mv", data: [[0,2672.529797978646],[250,9.024946619340612],[500,1400.5210073033013],[750,1657.6287665486884]]});
-        // sOS.add({name: "2025-01-08_09-15-00_Demo", unit: "mv", data: [[0,1657.6287665486884],[250,1400.5210073033013],[500,9.024946619340612],[750,2672.529797978646]]});
     }
 }
 /**
  * ----- END Indexed DB Process -----
  */
 
+
 /**
  * ----- BEGIN UI Interaction Process -----
  */
 const byteSize = str => new Blob([str]).size;
 
+let divDI = document.getElementById("divNoDeviceInfo");
+let divDB = document.getElementById("divDeviceButtons");
+let btnMC = document.getElementById("btnModifyCancel");
+let btnMA = document.getElementById("btnModifyApply");
 let divMS = document.getElementById("liveMeasurementSimple");
 let divMA = document.getElementById("liveMeasurementAdvanced");
-let btnPR = document.getElementById("bntPauseResume");
-let btnRS = document.getElementById("bntRecordStop");
+let btnPR = document.getElementById("btnPauseResume");
+let btnRS = document.getElementById("btnRecordStop");
 let divSN = document.getElementById("sessionsNothing");
 let divST = document.getElementById("sessionsTable");
+
+function updateUIDevice(){
+    if (isDeviceConnected) {
+        btnBC.hidden = true;
+        btnBC.classList.add("d-none");
+        divDI.hidden = true;
+        divDI.classList.add("d-none");
+        btnBD.hidden = false;
+        btnBD.classList.remove("d-none");
+        divDB.hidden = false;
+        divDB.classList.remove("d-none");
+    } else {
+        btnBD.hidden = true;
+        btnBD.classList.add("d-none");
+        divDB.hidden = true;
+        divDB.classList.add("d-none");
+        btnBC.hidden = false;
+        btnBC.classList.remove("d-none");
+        divDI.hidden = false;
+        divDI.classList.remove("d-none");
+    }
+}
 
 // Enable advanced live measurement mode
 var nbClickSLM = 0;
@@ -325,22 +340,22 @@ liveMeasurementMode.addEventListener("click", e => {
 
 var isLiveMeasurePaused = true;
 var debugRefresh;
-bntPauseResume.addEventListener("click", e => {
+btnPauseResume.addEventListener("click", e => {
     if (isLiveMeasurePaused == true) {
         preDebug.append(`play button for live measurment pressed\r\n`);
         isLiveMeasurePaused = false;
         btnPR.classList.remove("btn-success");
         btnPR.classList.add("btn-warning");
-        bntPauseResume.innerHTML = '<i class="bi bi-pause-fill"></i>';
-        bntRecordStop.disabled = false;
+        btnPauseResume.innerHTML = '<i class="bi bi-pause-fill"></i>';
+        btnRecordStop.disabled = false;
         debugRefresh = setInterval(updateMeasureValue, 250);
     } else {
         preDebug.append(`pause button for live measurment pressed\r\n`);
         isLiveMeasurePaused = true;
         btnPR.classList.remove("btn-warning");
         btnPR.classList.add("btn-success");
-        bntPauseResume.innerHTML = '<i class="bi bi-play-fill"></i>';
-        bntRecordStop.disabled = true;
+        btnPauseResume.innerHTML = '<i class="bi bi-play-fill"></i>';
+        btnRecordStop.disabled = true;
         clearInterval(debugRefresh);
     }
 });
@@ -373,7 +388,7 @@ function updateSessionsList() {
                 sessionsRecordList.push([cursor.key, cursor.value]);
 
                 sessionsRecordList.forEach(session => {
-                    list += `<tr><td>${session[0]}</td><td>${session[1].name}</td><td><button type="button" id="bntSessionDownload" class="btn btn-sm btn-outline-info" onclick="exportSession2CSV(this)" value=${sessionsRecordList.indexOf(session)}><i class="bi bi-download"></i></button>&nbsp;<button type="button" id="bntSessionDelete" class="btn btn-sm btn-outline-danger" onclick="deleteSession(this)" value=${session[0]}><i class="bi bi-trash-fill"></i></button></td></tr>`;
+                    list += `<tr><td>${session[0]}</td><td>${session[1].name}</td><td><button type="button" id="btnSessionDownload" class="btn btn-sm btn-outline-info" onclick="exportSession2CSV(this)" value=${sessionsRecordList.indexOf(session)}><i class="bi bi-download"></i></button>&nbsp;<button type="button" id="btnSessionDelete" class="btn btn-sm btn-outline-danger" onclick="deleteSession(this)" value=${session[0]}><i class="bi bi-trash-fill"></i></button></td></tr>`;
                 })
                 
                 sessionsList.innerHTML = list;
@@ -384,7 +399,7 @@ function updateSessionsList() {
 }
 
 function deleteSession(b) {
-    if (b.id = "bntSessionDelete"){
+    if (b.id = "btnSessionDelete"){
         if (isDBaccessOK) {
             let sOS = sessionsRecordDB.transaction("sessions", "readwrite").objectStore("sessions");
             sOS.delete(parseInt(b.value)).onsuccess = (d) => {
@@ -400,22 +415,13 @@ function deleteSession(b) {
                 };
             };
         }
-        // sessionsRecordList.splice((e.value), 1);
-        // if (sessionsRecordList.length > 0) {
-        //     updateSessionsList();
-        // } else {
-        //     sessionsTable.hidden = true;
-        //     divST.classList.add("d-none");
-        //     sessionsNothing.hidden = false;
-        //     divSN.classList.remove("d-none");
-        // }
     }
 }
 
 function exportSession2CSV(e) {
     let csvContent = "data:text/csv;charset=utf-8,";
 
-    if (e.id = "bntSessionDownload"){
+    if (e.id = "btnSessionDownload"){
         let session = sessionsRecordList[e.value];
         let filename = session[1].name + ".csv";
         csvContent += `Time(ms),Value(${session[1].unit})\r\n`;
@@ -436,20 +442,13 @@ function exportSession2CSV(e) {
 }
 
 
-bntRecordStop.addEventListener("click", e => {
+btnRecordStop.addEventListener("click", e => {
     if (isLiveMeasureRecorded == true) {
         preDebug.append(`play stop for live measurment pressed\r\n`);
         isLiveMeasureRecorded = false;
         btnRS.classList.remove("btn-outline-danger");
         btnRS.classList.add("btn-danger");
-        bntRecordStop.innerHTML = '<i class="bi bi-record-fill"></i>';
-
-        // if (sessionsRecordList.length == 0) {
-        //     sessionsNothing.hidden = true;
-        //     divSN.classList.add("d-none");
-        //     sessionsTable.hidden = false;
-        //     divST.classList.remove("d-none");
-        // }
+        btnRecordStop.innerHTML = '<i class="bi bi-record-fill"></i>';
 
         if (isDBaccessOK) {
             let sOS = sessionsRecordDB.transaction("sessions", "readwrite").objectStore("sessions");
@@ -458,27 +457,19 @@ bntRecordStop.addEventListener("click", e => {
 
             sOS.add({name: sessionName, unit: 'getModeUnit', data: recordedData});
             recordedData = [];
+
             // Get the last recoded session key and update session list
             sOS.getAllKeys().onsuccess = (e) => {
                 nbSessions =  e.target.result[e.target.result.length -1];
                 updateSessionsList();
             };
         }
-
-        // let timestamp = new Date();
-        // let sessionName = `${timestamp.getFullYear()}-${formatNumber(timestamp.getMonth()+1)}-${formatNumber(timestamp.getDate())}_${formatNumber(timestamp.getHours())}-${formatNumber(timestamp.getMinutes())}-${formatNumber(timestamp.getSeconds())}_getMode`;
-        // nbSessions++;
-        // sessionsRecordList.push([nbSessions, sessionName, 'getModeUnit', recordedData]);
-        // updateSessionsList();
-        // recordedData = [];
-
-
     } else {
         preDebug.append(`play record for live measurment pressed\r\n`);
         isLiveMeasureRecorded = true;
         btnRS.classList.remove("btn-danger");
         btnRS.classList.add("btn-outline-danger");
-        bntRecordStop.innerHTML = '<i class="bi bi-stop-fill"></i>';
+        btnRecordStop.innerHTML = '<i class="bi bi-stop-fill"></i>';
     }
 });
 

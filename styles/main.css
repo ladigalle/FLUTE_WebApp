@@ -2,7 +2,7 @@ body {
     min-width: 390px;
 }
 
- button#installButton, button#bntBLEConnect, button#bntBLEDisconnect {
+ button#installButton, button#bntBLEConnect, button#bntBLEDisconnect, #bntModifyCancel, #bntModifyApply {
     width: 8em;
 }
 

@@ -47,8 +47,8 @@
                     <div class="card h-100">
                         <div class="card-header d-flex justify-content-between align-items-center user-select-none">
                             <h3>My device</h3>
-                            <button type="button" id="bntBLEConnect" class="btn btn-primary">Connect</button>
-                            <button type="button" id="bntBLEDisconnect" class="btn btn-danger d-none" hidden>Disconnect</button>
+                            <button type="button" id="btnBLEConnect" class="btn btn-primary">Connect</button>
+                            <button type="button" id="btnBLEDisconnect" class="btn btn-danger d-none" hidden>Disconnect</button>
                         </div>
                         <div class="card-body">
                             <div id="divDeviceDetails">
@@ -74,12 +74,12 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card-footer user-select-none text-muted" style="min-height: 65px;">
+                        <div id="divNoDeviceInfo" class="card-footer user-select-none text-muted" style="min-height: 65px;">
                             Connect to your FLUTE to get infos and live measurement!
                         </div>
-                        <div class="card-footer d-flex justify-content-between align-items-center d-none" hidden>
-                            <button type="button" class="btn btn-warning">Modify</button>
-                            <button type="button" class="btn btn-danger">Destroy</button>
+                        <div id="divDeviceButtons" class="card-footer d-flex justify-content-between align-items-center d-none" hidden>
+                            <button type="button" id="btnModifyCancel" class="btn btn-warning">Modify</button>
+                            <button type="button" id="btnModifyApply" class="btn btn-info">Apply</button>
                         </div>
                     </div>
                 </div>
@@ -88,8 +88,8 @@
                         <div class="card-header d-flex justify-content-between align-items-center user-select-none">
                             <h3>Live Measurement</h3>
                             <div>
-                                <button type="button" id="bntPauseResume" class="btn btn-success"><i class="bi bi-play-fill"></i></button>
-                                <button type="button" id="bntRecordStop" class="btn btn-danger" disabled><i class="bi bi-record-fill"></i></button>
+                                <button type="button" id="btnPauseResume" class="btn btn-success"><i class="bi bi-play-fill"></i></button>
+                                <button type="button" id="btnRecordStop" class="btn btn-danger" disabled><i class="bi bi-record-fill"></i></button>
                             </div>
                         </div>
                         <div class="card-body d-flex flex-column align-items-center" style="min-height: 25em;">
